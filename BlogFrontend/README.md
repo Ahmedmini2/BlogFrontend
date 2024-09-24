@@ -1,12 +1,14 @@
-This Project Was Made By Ahmed Othman Abbas 
+# This Project Was Made By Ahmed Othman Abbas 
+
 Frontend Using React Vite Using Tailwind CSS
 Backend Using ASP.NET Core
 Database SQL Server
+
 # React + Vite
 
 run 
 
-# npm i First 
+# npm install
 
 Then Run 
 
