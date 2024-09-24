@@ -11,6 +11,7 @@ export const fetchPosts = createAsyncThunk(
         posts: response.data.posts,
         totalPages: response.data.totalPages,
         totalCount: response.data.totalCount,
+        page,
 
       };
     } catch (error) {
@@ -107,15 +108,26 @@ const postsSlice = createSlice({
       })
       .addCase(deleteThePost.fulfilled, (state, action) => {
         // Remove the deleted post from the state
-        state.posts = state.posts.filter(post => post.id !== action.payload);
+        state.posts = state.posts.filter((post) => post.id !== action.payload);
         state.post = {}; // Clear the post details if the deleted post was displayed
       })
       .addCase(fetchPosts.fulfilled, (state, action) => {
         state.loading = false;
-        // Append the new posts to the existing posts array
-        state.posts = [...state.posts, ...action.payload.posts];
-        state.totalPages = action.payload.totalPages;
-        state.totalCount = action.payload.totalCount;
+        const { posts, totalPages, totalCount, page } = action.payload;
+
+        if (page === 1) {
+          // Reset posts if fetching the first page
+          state.posts = posts;
+        } else if (state.page > page) {
+          // Remove the last 10 posts when going back a page
+          state.posts = state.posts.slice(0, state.posts.length - state.pageSize);
+        } else {
+          // Append new posts when going forward
+          state.posts = [...state.posts, ...posts];
+        }
+
+        state.totalPages = totalPages;
+        state.totalCount = totalCount;
       })
       .addCase(fetchPosts.rejected, (state, action) => {
         state.loading = false;
@@ -127,13 +139,12 @@ const postsSlice = createSlice({
       })
       .addCase(fetchPost.fulfilled, (state, action) => {
         state.loading = false;
-        state.post = action.payload; 
+        state.post = action.payload;
       })
       .addCase(fetchPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload; // Set error message
       })
-      
       .addCase(deleteThePost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload; // Set error message
@@ -141,9 +152,7 @@ const postsSlice = createSlice({
       .addCase(createPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload; // Set error message
-      })
-      
-      
+      });
   },
 });
 

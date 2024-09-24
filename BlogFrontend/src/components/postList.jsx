@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchPosts, incrementPage } from '../store/postSlice';
+import { fetchPosts, incrementPage, decrementPage } from '../store/postSlice';
 
 const PostList = () => {
   const dispatch = useDispatch();
@@ -15,6 +15,20 @@ const PostList = () => {
   const handleLoadMore = () => {
     if (page < totalPages) {
       dispatch(incrementPage());
+    }
+  };
+
+   // Handle page increment
+   const handleNextPage = () => {
+    if (page < totalPages) {
+      dispatch(incrementPage());
+    }
+  };
+
+  // Handle page decrement
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      dispatch(decrementPage());
     }
   };
 
@@ -73,11 +87,30 @@ const PostList = () => {
           </div>
         )}
 
-        {/* Pagination  */}
-        <div className="flex justify-center mt-4">
-          
-          <span className="mx-4">{`Page ${page} of ${totalPages} and a Total of ${totalCount} Records`}</span>
-         
+
+
+         {/* Pagination Controls */}
+         <div className="flex justify-center mt-4">
+          {page > 1 && (
+            <button
+            onClick={handlePreviousPage}
+            disabled={page === 1}
+            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          )}
+          <span className="mx-4">{`Page ${page} of ${totalPages} and a Total of ${totalCount} Records `}</span>
+          {page < totalPages && (
+            <button
+            onClick={handleNextPage}
+            disabled={page === totalPages}
+            className="px-4 py-2 bg-gray-300 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+          )}
+
         </div>
       </div>
     </div>
